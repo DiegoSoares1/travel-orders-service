@@ -1,0 +1,27 @@
+services:
+
+  app:
+    image: php:8.4-cli
+    container_name: travel-orders-app
+    working_dir: /app/travel-orders
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    command: bash -c "
+      apt-get update &&
+      apt-get install -y git unzip curl &&
+      curl -sS https://getcomposer.org/installer | php &&
+      mv composer.phar /usr/local/bin/composer &&
+      composer install &&
+      php artisan key:generate &&
+      php artisan serve --host=0.0.0.0 --port=8000
+      "
+  mysql:
+    image: mysql:8
+    container_name: travel-orders-db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: travel_orders
+    ports:
+      - "3306:3306"
